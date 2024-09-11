@@ -193,8 +193,6 @@ Feel free to explore these folders for a deeper understanding of the project's c
 
 This project has been a collective effort of the following team members. Below are the contributors who collaborated on this project:
 
-<a href="https://github.com/angular/angular-ja/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=angular/angular-ja" />
+<a href="https://github.com/Sukarnascience/RogiDoot-VirtualCare/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=Sukarnascience/RogiDoot-VirtualCare" />
 </a>
-
-Made with [contrib.rocks](https://contrib.rocks).
