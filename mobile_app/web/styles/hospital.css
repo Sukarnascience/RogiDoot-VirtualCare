@@ -1,0 +1,268 @@
+/* Modern Custom Theme */
+:root {
+    --primary-color: #4f46e5;
+    --primary-hover: #4338ca;
+    --danger-color: #ef4444;
+    --warning-color: #f59e0b;
+    --success-color: #10b981;
+    --background: #f3f4f6;
+    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --transition: all 0.3s ease;
+  }
+  
+  body {
+    background-color: var(--background);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    color: #1f2937;
+    min-height: 100vh;
+    padding-bottom: 2rem;
+  }
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+  
+  /* Header Section */
+  h1 {
+    color: #111827;
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 2rem;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  /* Emergency Button */
+  #getLocation {
+    background: linear-gradient(135deg, var(--danger-color), #dc2626);
+    color: white;
+    border: none;
+    border-radius: 1rem;
+    padding: 1rem 2rem;
+    font-weight: 600;
+    font-size: 1.125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: var(--transition);
+    box-shadow: 0 4px 6px -1px rgba(220, 38, 38, 0.2);
+    max-width: 600px;
+    margin: 0 auto;
+    display: block;
+  }
+  
+  #getLocation:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px -1px rgba(220, 38, 38, 0.3);
+  }
+  
+  #getLocation:active {
+    transform: translateY(0);
+  }
+  
+  /* Nearest Hospital Section */
+  #nearestHospital {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin: 2rem auto;
+    max-width: 600px;
+    box-shadow: var(--card-shadow);
+    text-align: center;
+  }
+  
+  #nearestHospital h2 {
+    color: var(--success-color);
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  #nearestHospital p {
+    color: #4b5563;
+    font-size: 1.125rem;
+    margin: 0;
+  }
+  
+  /* Hospital Cards Grid */
+  #hospitals {
+    margin: 2rem -0.5rem;
+  }
+  
+  .hospital-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.25rem;
+    height: 100%;
+    transition: var(--transition);
+    border: 2px solid transparent;
+  }
+  
+  .hospital-card strong {
+    color: #111827;
+    font-size: 1.125rem;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+  
+  .hospital-card p {
+    color: #6b7280;
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+  
+  .hospital-card[style*="d4edda"] {
+    background: #d4edda20;
+    border-color: var(--success-color);
+  }
+  
+  .hospital-card[style*="fff3cd"] {
+    background: #fff3cd20;
+    border-color: var(--warning-color);
+  }
+  
+  .hospital-card[style*="f8d7da"] {
+    background: #f8d7da20;
+    border-color: var(--danger-color);
+  }
+  
+  /* Map Container */
+  #map {
+    height: 500px;
+    border-radius: 1rem;
+    box-shadow: var(--card-shadow);
+    margin-top: 2rem;
+    border: 4px solid white;
+  }
+  
+  /* Modal Styling */
+  .modal-content {
+    border: none;
+    border-radius: 1rem;
+    overflow: hidden;
+  }
+  
+  .modal-header {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+    padding: 1.5rem;
+    border: none;
+  }
+  
+  .modal-header .modal-title {
+    color: white;
+    font-weight: 600;
+  }
+  
+  .modal-header .close {
+    color: white;
+    opacity: 0.8;
+    transition: var(--transition);
+  }
+  
+  .modal-header .close:hover {
+    opacity: 1;
+  }
+  
+  .modal-body {
+    padding: 1.5rem;
+  }
+  
+  .modal-body p {
+    color: #4b5563;
+    font-size: 1.125rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .btn-ambulance {
+    background: linear-gradient(135deg, var(--danger-color), #dc2626);
+    border: none;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    font-weight: 600;
+    transition: var(--transition);
+  }
+  
+  .btn-ambulance:hover {
+    transform: translateY(-2px);
+    filter: brightness(110%);
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .container {
+      padding: 1rem;
+    }
+  
+    h1 {
+      font-size: 2rem;
+    }
+  
+    #getLocation {
+      font-size: 1rem;
+      padding: 0.875rem 1.5rem;
+    }
+  
+    .hospital-card {
+      padding: 1rem;
+    }
+  
+    #map {
+      height: 400px;
+    }
+  }
+  
+  /* Custom Leaflet Marker Styles */
+  .leaflet-marker-icon.highlight {
+    border: 2px solid var(--success-color);
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
+  }
+  
+  /* Animations */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .hospital-card {
+    animation: fadeIn 0.3s ease-out forwards;
+  }
+  
+  #nearestHospital {
+    animation: fadeIn 0.4s ease-out forwards;
+  }
+  
+  /* Distance Indicators */
+  .distance-indicator {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-top: 0.5rem;
+  }
+  
+  .distance-near {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: var(--success-color);
+  }
+  
+  .distance-medium {
+    background-color: rgba(245, 158, 11, 0.1);
+    color: var(--warning-color);
+  }
+  
+  .distance-far {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--danger-color);
+  }

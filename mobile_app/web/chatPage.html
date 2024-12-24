@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="./assets/image/icon.jpg" type="image/jpg">
+    <title>Chat - Namma Rakshane</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./styles/chat.css">
+    <style>
+        .chat-container {
+            height: 70vh;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        .chat-message {
+            margin: 10px 0;
+        }
+        .user-message {
+            text-align: right;
+        }
+        .reply-message {
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .speak-button {
+            background: transparent;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        .emergency-button {
+            background-color: red;
+            color: white;
+            border: none;
+        }
+        .generate-report-button {
+            background-color: skyblue;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+        .generate-report-button:hover {
+            background-color: deepskyblue;
+        }
+        .call-button {
+            background-color: green;
+            color: white;
+            border: none;
+            padding: 10px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+        .call-button:hover {
+            background-color: darkgreen;
+        }
+        .hospital-info-box {
+            border: 2px solid #28a745;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        .hospital-info-box h5 {
+            margin: 0;
+            font-size: 1.2rem;
+            color: #28a745;
+        }
+        .hospital-info-box p {
+            margin: 5px 0;
+        }
+        .hospital-info-box a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .hospital-info-box a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 id="memberName"></h2>
+            <div>
+                <button class="emergency-button" onclick="showEmergencyAlert()">Emergency</button>
+                <button class="generate-report-button" onclick="generateReport()">Generate Report</button>
+            </div>
+        </div>
+        <p class="text-muted" id="chatPrompt">How can I help you today?</p>
+        <div class="chat-container" id="chatContainer"></div>
+        
+        <form id="chatForm" class="input-group">
+            <input type="text" id="chatInput" class="form-control" placeholder="Type your message here..." required>
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="submit" id="sendButtonText">Send</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const chatContainer = document.getElementById('chatContainer');
+        const memberNameElement = document.getElementById('memberName');
+        const chatForm = document.getElementById('chatForm');
+        const chatInput = document.getElementById('chatInput');
+        const chatPrompt = document.getElementById('chatPrompt');
+        const sendButtonText = document.getElementById('sendButtonText');
+    
+        let hospitals = [];  // To store hospital data
+    
+        // Load the selected language from localStorage
+        const language = localStorage.getItem('language') || 'en';
+    
+        // Translation object
+        const translations = {
+            en: {
+                memberGreeting: "Hi",
+                chatPrompt: "How can I help you today?",
+                sendButtonText: "Send",
+            },
+            hi: {
+                memberGreeting: "नमस्ते",
+                chatPrompt: "मैं आपकी किस प्रकार मदद कर सकता हूँ?",
+                sendButtonText: "भेजें",
+            },
+            kn: {
+                memberGreeting: "ಹೆಲೋ",
+                chatPrompt: "ನಾನು ನಿಮಗೆ ಹೇಗೆ ಸಹಾಯ ಮಾಡಬಹುದು?",
+                sendButtonText: "ಹೊರಹಾಕಿ",
+            },
+            te: {
+                memberGreeting: "హలో",
+                chatPrompt: "నేను మీకు ఎలా సహాయం చేయగలను?",
+                sendButtonText: "పంపండి",
+            }
+        };
+    
+        // Get member details from localStorage
+        const member = JSON.parse(localStorage.getItem('currentMember'));
+    
+        // Set member name on the page
+        if (member) {
+            memberNameElement.innerText = `${translations[language].memberGreeting} ${member.name}`;
+        }
+    
+        // Set chat prompt and button text based on selected language
+        chatPrompt.innerText = translations[language].chatPrompt;
+        sendButtonText.innerText = translations[language].sendButtonText;
+    
+        // Show Emergency Alert
+        function showEmergencyAlert() {
+            window.location.href = 'hospital.html';
+        }
+        
+        // Navigate to the "device.html" page for generating the report
+        function generateReport() {
+            window.location.href = 'device.html';
+        }
+    
+        // Fetch hospitals data from suprate.json
+        fetch('hospitalJSON.json')
+            .then(response => response.json())
+            .then(data => {
+                hospitals = data;  // Store the fetched data
+            })
+            .catch(error => {
+                console.error("Error fetching hospitals data:", error);
+            });
+    
+        // Handle form submission
+        chatForm.onsubmit = async (event) => {
+            event.preventDefault();
+            // Store the message and reply in localStorage
+            localStorage.setItem('whatstheissue', JSON.stringify(chatInput.value));
+            const message = `"${chatInput.value}" give reply in "${language}" language full`;
+            console.log(message);
+            appendMessage(message, 'user');
+            chatInput.value = '';
+    
+            // Send message to the backend with selected language
+            try {
+                const response = await fetch('http://localhost:8080/chat', { // 8000
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message,
+                        memberName: member.name,
+                        dob: member.dob,
+                        gender: member.gender,
+                        diseases: member.diseases,
+                    }),
+                });
+    
+                if (response.ok) {
+                    const reply = await response.json();
+                    const replyMessage = reply.message;
+                    const hospitalInfo = findMatchingHospital(replyMessage);
+    
+
+                    if (hospitalInfo) {
+                        appendMessage(`${replyMessage}`, 'reply');
+                        appendHospitalInfoBox(hospitalInfo);
+                    } else {
+                        appendMessage(replyMessage, 'reply');
+                    }
+                } else {
+                    appendMessage("Error: Unable to get reply", 'reply');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                appendMessage("Error: Unable to communicate with server", 'reply');
+            }
+        };
+    
+        // Check if any hospital matches the specialty in the AI's response
+        function findMatchingHospital(replyMessage) {
+            for (const hospital of hospitals) {
+                if (replyMessage.toLowerCase().includes(hospital.special.toLowerCase())) {
+                    return hospital;
+                }
+            }
+            return null;
+        }
+    
+        // Append message to the chat container
+        function appendMessage(message, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${type === 'user' ? 'user-message' : 'reply-message'}`;
+            messageDiv.innerHTML = message;
+
+            // Add "Speak Up" button with emoji for reply message
+            if (type === 'reply') {
+                const speakButton = document.createElement('button');
+                speakButton.className = 'speak-button';
+                speakButton.innerHTML = '🔊'; // Speak Emoji
+    
+                // Modify onclick to prevent page reload and keep the chat intact
+                speakButton.onclick = (event) => {
+                    event.preventDefault();  // Prevent the default button action (e.g., page reload)
+                    speakReply(message);     // Call the function to speak the reply
+                };
+    
+                messageDiv.appendChild(speakButton);
+            }
+
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight; // Scroll to the bottom
+        }
+
+        // Function to trigger Text-to-Speech API
+        async function speakReply(message) {
+            try {
+                const response = await fetch('http://127.0.0.1:8080/text-to-speech/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: message, language: language })
+                });
+    
+                if (response.ok) {
+                    console.log('Audio is playing locally.');
+                } else {
+                    console.error('Text-to-Speech API error:', response.statusText);
+                }
+            } catch (error) {
+                console.error("Text-to-Speech Error:", error);
+            }
+        }
+    
+        // Append hospital information in a styled box
+        function appendHospitalInfoBox(hospital) {
+            const hospitalBox = document.createElement('div');
+            hospitalBox.className = 'hospital-info-box';
+            
+            hospitalBox.innerHTML = `
+                <h5>${hospital.name} - ${hospital.special}</h5>
+                <p>Phone: ${hospital.phone}</p>
+                <p><a href="https://www.google.com/maps?q=${hospital.coords[0]},${hospital.coords[1]}" target="_blank">View on Google Maps</a></p>
+                <button class="btn btn-ambulance btn-block" onclick="call(${hospital.phone})">Call Ambulance</button>
+            `;
+            chatContainer.appendChild(hospitalBox);
+    
+            // Add call button
+            appendCallButton(hospital.phone);
+        }
+
+        function call(phone) {
+            window.location.href = `tel:${phone}`;
+        };
+    
+        // Append call button
+        function appendCallButton(phone) {
+            const callButton = document.createElement('button');
+            callButton.className = 'call-button';
+            callButton.innerText = 'Call Now';
+            callButton.onclick = () => window.location.href = `tel:${phone}`;
+            chatContainer.appendChild(callButton);
+        }
+    </script>
+</body>
+</html>

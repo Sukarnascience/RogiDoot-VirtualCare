@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Members List - Namma Rakshane</title>
+    <link rel="icon" href="./assets/image/icon.jpg" type="image/jpg">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./styles/members.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <!-- Language Selection Dropdown -->
+        <div id="languageSelector" class="text-right mb-3">
+            <select id="languageSelect" class="form-control" style="width: 150px; display: inline-block;">
+                <option value="en">English</option>
+                <option value="hi">Hindi</option>
+                <option value="kn">Kannada</option>
+                <option value="te">Telugu</option>
+            </select>
+        </div>
+
+        <!-- Members List Section -->
+        <h1 class="text-center" id="pageTitle">Members List</h1>
+        <button id="addMemberButton" class="btn btn-primary mb-3">Add Member</button>
+        <div id="membersContainer" class="row"></div>
+
+        <div id="memberForm" class="card hidden">
+            <div class="card-body">
+                <h2 class="card-title" id="formTitle">Add/Edit Member</h2>
+                <form id="form">
+                    <input type="hidden" id="memberIndex">
+                    <div class="form-group">
+                        <label for="name" id="nameLabel">Name:</label>
+                        <input type="text" class="form-control" id="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="dob" id="dobLabel">DOB:</label>
+                        <input type="date" class="form-control" id="dob" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="gender" id="genderLabel">Gender:</label>
+                        <select id="gender" class="form-control" required>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="relation" id="relationLabel">Who are you?</label>
+                        <select id="relation" class="form-control" required>
+                            <option value="Self">Self</option>
+                            <option value="Wife">Wife</option>
+                            <option value="Friend">Friend</option>
+                            <option value="Son">Son</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="diseases" id="diseasesLabel">Past Diseases:</label>
+                        <input type="text" class="form-control" id="diseases">
+                    </div>
+                    <button type="submit" class="btn btn-success" id="saveButtonText">Save</button>
+                    <button type="button" id="closeFormButton" class="btn btn-secondary">Close</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Translation object to store text for different languages
+        const translations = {
+            en: {
+                pageTitle: "Members List",
+                addMemberButton: "Add Member",
+                formTitle: "Add/Edit Member",
+                nameLabel: "Name:",
+                dobLabel: "DOB:",
+                genderLabel: "Gender:",
+                relationLabel: "Who are you?",
+                diseasesLabel: "Past Diseases:",
+                saveButtonText: "Save",
+                closeButtonText: "Close"
+            },
+            hi: {
+                pageTitle: "सदस्य सूची",
+                addMemberButton: "सदस्य जोड़ें",
+                formTitle: "सदस्य जोड़ें/संपादित करें",
+                nameLabel: "नाम:",
+                dobLabel: "जन्मतिथि:",
+                genderLabel: "लिंग:",
+                relationLabel: "आप कौन हैं?",
+                diseasesLabel: "पूर्व रोग:",
+                saveButtonText: "सहेजें",
+                closeButtonText: "बंद करें"
+            },
+            kn: {
+                pageTitle: "ಸದಸ್ಯರ ಪಟ್ಟಿ",
+                addMemberButton: "ಸದಸ್ಯ ಸೇರಿಸಿ",
+                formTitle: "ಸದಸ್ಯ ಸೇರಿಸಿ/ಸಂಪಾದಿಸಿ",
+                nameLabel: "ಹೆಸರು:",
+                dobLabel: "ಜನುಮ ದಿನಾಂಕ:",
+                genderLabel: "ಲಿಂಗ:",
+                relationLabel: "ನೀವು ಯಾರು?",
+                diseasesLabel: "ಹಿಂದಿನ ರೋಗಗಳು:",
+                saveButtonText: "ಉಳಿಸು",
+                closeButtonText: "ಮುಚ್ಚು"
+            },
+            te: {
+                pageTitle: "సభ్యుల జాబితా",
+                addMemberButton: "సభ్యుడిని జోడించు",
+                formTitle: "సభ్యుడిని జోడించు/సవరించు",
+                nameLabel: "పేరు:",
+                dobLabel: "జన్మ తేదీ:",
+                genderLabel: "లింగం:",
+                relationLabel: "మీరు ఎవరు?",
+                diseasesLabel: "గత రోగాలు:",
+                saveButtonText: "ఆమోదించు",
+                closeButtonText: "మూసి వేయండి"
+            }
+        };
+
+        // Get elements
+        const languageSelect = document.getElementById('languageSelect');
+        const pageTitle = document.getElementById('pageTitle');
+        const addMemberButton = document.getElementById('addMemberButton');
+        const formTitle = document.getElementById('formTitle');
+        const nameLabel = document.getElementById('nameLabel');
+        const dobLabel = document.getElementById('dobLabel');
+        const genderLabel = document.getElementById('genderLabel');
+        const relationLabel = document.getElementById('relationLabel');
+        const diseasesLabel = document.getElementById('diseasesLabel');
+        const saveButtonText = document.getElementById('saveButtonText');
+        const closeFormButton = document.getElementById('closeFormButton');
+
+        // Load saved language from localStorage or default to English
+        const savedLanguage = localStorage.getItem('language') || 'en';
+        languageSelect.value = savedLanguage;
+        setLanguage(savedLanguage);
+
+        // Update language on dropdown change
+        languageSelect.addEventListener('change', (event) => {
+            const language = event.target.value;
+            localStorage.setItem('language', language);
+            setLanguage(language);
+        });
+
+        // Function to set the language of the content
+        function setLanguage(language) {
+            const translation = translations[language];
+            pageTitle.textContent = translation.pageTitle;
+            addMemberButton.textContent = translation.addMemberButton;
+            formTitle.textContent = translation.formTitle;
+            nameLabel.textContent = translation.nameLabel;
+            dobLabel.textContent = translation.dobLabel;
+            genderLabel.textContent = translation.genderLabel;
+            relationLabel.textContent = translation.relationLabel;
+            diseasesLabel.textContent = translation.diseasesLabel;
+            saveButtonText.textContent = translation.saveButtonText;
+            closeFormButton.textContent = translation.closeButtonText;
+        }
+
+        const membersContainer = document.getElementById('membersContainer');
+        const memberForm = document.getElementById('memberForm');
+
+        function updateMembersDisplay() {
+            membersContainer.innerHTML = '';
+            const members = JSON.parse(localStorage.getItem('members')) || [];
+            members.forEach((member, index) => {
+                const memberBox = document.createElement('div');
+                memberBox.className = 'col-md-4 col-sm-6 col-12 mb-3'; // Responsive classes
+                memberBox.innerHTML = `
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">${member.name}</h5>
+                            <p class="card-text text-muted">${member.relation}</p>
+                            <button class="btn btn-warning btn-sm" onclick="editMember(event, ${index})">Edit</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteMember(event, ${index})">Delete</button>
+                        </div>
+                    </div>
+                `;
+                // Only navigate to chat page if the card itself is clicked
+                memberBox.onclick = (event) => {
+                    if (event.target.tagName !== 'BUTTON') {
+                        localStorage.setItem('currentMember', JSON.stringify(member));
+                        window.location.href = 'mcq.html';
+                    }
+                };
+                membersContainer.appendChild(memberBox);
+            });
+        }
+
+        addMemberButton.onclick = () => {
+            memberForm.classList.toggle('hidden');
+            document.getElementById('form').reset();
+            document.getElementById('memberIndex').value = '';
+        };
+
+        closeFormButton.onclick = () => {
+            memberForm.classList.add('hidden');
+        };
+
+        document.getElementById('form').onsubmit = (event) => {
+            event.preventDefault();
+            const name = document.getElementById('name').value;
+            const dob = new Date(document.getElementById('dob').value);
+            const age = new Date().getFullYear() - dob.getFullYear();
+            const gender = document.getElementById('gender').value;
+            const relation = document.getElementById('relation').value;
+            const diseases = document.getElementById('diseases').value;
+
+            const member = { name, dob, age, gender, relation, diseases };
+            const members = JSON.parse(localStorage.getItem('members')) || [];
+            const index = document.getElementById('memberIndex').value;
+
+            if (index) {
+                members[index] = member; // Update existing member
+            } else {
+                members.push(member); // Add new member
+            }
+
+            localStorage.setItem('members', JSON.stringify(members));
+            updateMembersDisplay();
+            memberForm.classList.add('hidden');
+        };
+
+        function editMember(event, index) {
+            event.stopPropagation(); // Prevent card click event
+            const members = JSON.parse(localStorage.getItem('members')) || [];
+            const member = members[index];
+            document.getElementById('name').value = member.name;
+            document.getElementById('dob').value = member.dob.split('T')[0]; // Format date for input
+            document.getElementById('gender').value = member.gender;
+            document.getElementById('relation').value = member.relation;
+            document.getElementById('diseases').value = member.diseases;
+            document.getElementById('memberIndex').value = index;
+            memberForm.classList.remove('hidden');
+        }
+
+        function deleteMember(event, index) {
+            event.stopPropagation(); // Prevent card click event
+            const members = JSON.parse(localStorage.getItem('members')) || [];
+            members.splice(index, 1); // Remove member
+            localStorage.setItem('members', JSON.stringify(members));
+            updateMembersDisplay();
+        }
+
+        // Initial display
+        updateMembersDisplay();
+    </script>
+</body>
+</html>

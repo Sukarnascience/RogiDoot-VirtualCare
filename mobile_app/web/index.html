@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Namma Rakshane</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="./styles/index.css">
+    <link rel="icon" href="./assets/image/icon.jpg" type="image/jpg">
+</head>
+<body>
+    <div class="splash-screen">
+        <img src="./assets/image/icon.jpg" alt="Namma ROOGIDOOT Logo" class="logo">
+        <div class="welcome-message" id="welcomeMessage"></div>
+        <p class="creator">Created By PU-CS-Team</p>
+    </div>
+
+    <script>
+        const messages = [
+            "Welcome to ROOGIDOOT!",
+            "नमस्ते ROOGIDOOT!",
+            "మీరు ROOGIDOOT కి స్వాగతం!",
+            "ನೀವು ROOGIDOOT ಗೆ ಸ್ವಾಗತ!"
+        ];
+
+        let currentIndex = 0;
+        const welcomeMessageElement = document.getElementById('welcomeMessage');
+
+        function showNextMessage() {
+            if (currentIndex < messages.length) {
+                welcomeMessageElement.innerText = messages[currentIndex];
+                currentIndex++;
+                setTimeout(showNextMessage, 2000); // Change message every 2 seconds
+            } else {
+                setTimeout(() => {
+                    window.location.href = 'members.html'; // Move to the next page after the last message
+                }, 1000); // Wait for 1 second before moving to next page
+            }
+        }
+
+        window.onload = showNextMessage;
+    </script>
+</body>
+</html>
